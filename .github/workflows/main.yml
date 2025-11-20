@@ -20,11 +20,7 @@ jobs:
         
         # Define a list of Java Development Kit (JDK) versions to test
         java-version: [11, 21] # Common LTS versions
-    
       fail-fast: true 
-      
-      # Optional: Limits the number of parallel jobs that can run from the matrix.
-      # Useful for controlling resource usage on your runners.
       max-parallel: 3
 
     steps:
