@@ -10,16 +10,12 @@ on:
 
 jobs:
   build-and-test:
-    # The runner OS will be dynamically set by the matrix
     runs-on: ${{ matrix.os }}
     
     strategy:
       matrix:
-        # Define a list of Operating Systems to run on
         os: [ubuntu-latest, windows-latest]
-        
-        # Define a list of Java Development Kit (JDK) versions to test
-        java-version: [11, 21] # Common LTS versions
+        java-version: [11, 21]
       fail-fast: true 
       max-parallel: 3
 
@@ -31,26 +27,17 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java-version }}
-          distribution: 'temurin' # Recommended: 'temurin' (Adoptium OpenJDK), 'adopt', 'zulu', 'microsoft', etc.
-          # Optional: Specify Maven version if you added it to your matrix
-          # maven-version: ${{ matrix.maven-version }}
-          cache: maven # Enable caching for Maven dependencies to speed up builds
+          distribution: 'temurin'
+          cache: maven
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml # -B for batch mode (non-interactive)
-        # If you have specific Maven profiles (e.g., from 'include' matrix option):
-        # run: mvn -B package --file pom.xml -P ${{ matrix.test-profile || '' }}
+        run: mvn -B package --file pom.xml
 
-      - name: Run tests (often included in 'mvn package')
-        # If your 'mvn package' does not run tests, or you have separate test phases:
-        # run: mvn -B test --file pom.xml
-        # If you're using a specific test profile from the matrix:
-        # if: ${{ matrix.test-profile }}
-        # run: mvn -B test --file pom.xml -P ${{ matrix.test-profile }}
+      - name: Run tests
+        run: mvn -B test --file pom.xml
 
       - name: Upload JaCoCo Coverage Report (Optional)
-        if: success() # Only upload if the build/test was successful
-        # Adjust path to your JaCoCo report as per your project's pom.xml configuration
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report-${{ matrix.os }}-java${{ matrix.java-version }}
@@ -61,4 +48,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: my-app-${{ matrix.os }}-java${{ matrix.java-version }}
-          path: target/*.jar # Adjust to your actual artifact path, e.g., target/*.jar or target/*.war
+          path: target/*.jar
